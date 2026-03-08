@@ -168,8 +168,6 @@ function buildTable(pageImages: string[]): Table {
       bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
       left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
       right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
-      insideH: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
-      insideV: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
     },
   });
 }
