@@ -15,26 +15,26 @@ Upload any number of photos. The tool automatically:
 
 ## Print specifications
 
-| Parameter | Value |
-|---|---|
-| Page | A4 — 210 × 297 mm |
-| Piece size | 58 × 31 mm |
-| Grid | 3 columns × 8 rows = **24 pieces / sheet** |
-| Horizontal margin | 16 mm *(auto-centered: `(210 − 178) / 2`)* |
-| Top margin | 15 mm |
-| Gutter | 2 mm between pieces |
-| Resolution | 300 DPI |
-| Cut guide | 0.25 pt light-grey border on every piece |
+| Parameter         | Value                                      |
+| ----------------- | ------------------------------------------ |
+| Page              | A4 — 210 × 297 mm                          |
+| Piece size        | 58 × 31 mm                                 |
+| Grid              | 3 columns × 8 rows = **24 pieces / sheet** |
+| Horizontal margin | 16 mm _(auto-centered: `(210 − 178) / 2`)_ |
+| Top margin        | 15 mm                                      |
+| Gutter            | 2 mm between pieces                        |
+| Resolution        | 300 DPI                                    |
+| Cut guide         | 0.25 pt light-grey border on every piece   |
 
 ## Tech stack
 
-| Layer | Library |
-|---|---|
-| Framework | Next.js 16 (App Router) + React 19 |
-| Styling | Tailwind CSS v4 + shadcn/ui (radix-nova) |
-| PDF export | jsPDF 4 — exact mm units |
-| Word export | docx 9 — spacer-row/column gutter model |
-| File input | react-dropzone |
+| Layer            | Library                                        |
+| ---------------- | ---------------------------------------------- |
+| Framework        | Next.js 16 (App Router) + React 19             |
+| Styling          | Tailwind CSS v4 + shadcn/ui (radix-nova)       |
+| PDF export       | jsPDF 4 — exact mm units                       |
+| Word export      | docx 9 — spacer-row/column gutter model        |
+| File input       | react-dropzone                                 |
 | Image processing | Canvas API (300 DPI crop + split, client-side) |
 
 ## Getting started
@@ -64,12 +64,16 @@ lib/
 ## How the export models work
 
 ### PDF (`lib/generate-pdf.ts`)
+
 Places each image at `(MARGIN_X + col × 60, MARGIN_Y + row × 33)` in mm, then draws a 0.25 pt grey rectangle on top as a cut guide. Units are native mm throughout — no DPI conversion needed at draw time.
 
 ### Word (`lib/generate-docx.ts`)
+
 Uses a **5-column × 15-row** table to achieve exact 2 mm gutters without distorting image size:
+
 ```
 Columns: [ 58 mm | 2 mm | 58 mm | 2 mm | 58 mm ]
 Rows:    [ 31 mm ─ 2 mm ─ 31 mm ─ 2 mm ─ ... ]   (8 content + 7 spacer = 15 total)
 ```
+
 Content cells have zero padding so images fill exactly 58 × 31 mm. Spacer cells are borderless.
