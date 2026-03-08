@@ -69,7 +69,17 @@ export function processAndSplitImage(file: File): Promise<[string, string]> {
         srcY = (img.naturalHeight - srcH) / 2;
       }
 
-      ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, PIECE_WIDTH_PX, FULL_HEIGHT_PX);
+      ctx.drawImage(
+        img,
+        srcX,
+        srcY,
+        srcW,
+        srcH,
+        0,
+        0,
+        PIECE_WIDTH_PX,
+        FULL_HEIGHT_PX,
+      );
       URL.revokeObjectURL(objectUrl);
 
       // ── Step 2: split at midpoint ───────────────────────────────────────────
@@ -79,8 +89,14 @@ export function processAndSplitImage(file: File): Promise<[string, string]> {
       const topCtx = topCanvas.getContext("2d")!;
       topCtx.drawImage(
         fullCanvas,
-        0, 0, PIECE_WIDTH_PX, PIECE_HEIGHT_PX, // source: upper half
-        0, 0, PIECE_WIDTH_PX, PIECE_HEIGHT_PX  // dest: full canvas
+        0,
+        0,
+        PIECE_WIDTH_PX,
+        PIECE_HEIGHT_PX, // source: upper half
+        0,
+        0,
+        PIECE_WIDTH_PX,
+        PIECE_HEIGHT_PX, // dest: full canvas
       );
 
       const bottomCanvas = document.createElement("canvas");
@@ -89,8 +105,14 @@ export function processAndSplitImage(file: File): Promise<[string, string]> {
       const bottomCtx = bottomCanvas.getContext("2d")!;
       bottomCtx.drawImage(
         fullCanvas,
-        0, PIECE_HEIGHT_PX, PIECE_WIDTH_PX, PIECE_HEIGHT_PX, // source: lower half
-        0, 0,               PIECE_WIDTH_PX, PIECE_HEIGHT_PX  // dest: full canvas
+        0,
+        PIECE_HEIGHT_PX,
+        PIECE_WIDTH_PX,
+        PIECE_HEIGHT_PX, // source: lower half
+        0,
+        0,
+        PIECE_WIDTH_PX,
+        PIECE_HEIGHT_PX, // dest: full canvas
       );
 
       resolve([

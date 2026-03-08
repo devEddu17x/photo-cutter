@@ -53,7 +53,7 @@ const IMG_H_PX = Math.round((PIECE_H_MM * 96) / 25.4); // 117
 
 // ── Column widths: content, spacer, content, spacer, content ─────────────────
 const COL_WIDTHS_TWP = [0, 1, 2, 3, 4].map((i) =>
-  convertMillimetersToTwip(i % 2 === 0 ? PIECE_W_MM : GUTTER_MM)
+  convertMillimetersToTwip(i % 2 === 0 ? PIECE_W_MM : GUTTER_MM),
 ); // [58mm, 2mm, 58mm, 2mm, 58mm] in twips
 
 // ── Borders ──────────────────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ function buildTable(pageImages: string[]): Table {
           margins: { top: 0, bottom: 0, left: 0, right: 0 },
           borders: CUT_GUIDE,
           children: cellChildren,
-        })
+        }),
       );
     }
 
@@ -152,7 +152,7 @@ function buildTable(pageImages: string[]): Table {
         children: cells,
         height: { value: rowHeightTwp, rule: HeightRule.EXACT },
         cantSplit: true,
-      })
+      }),
     );
   }
 
@@ -183,9 +183,9 @@ export async function generateDocx(pages: string[][]): Promise<void> {
       page: {
         size: { width: MM(PAGE_W_MM), height: MM(297) },
         margin: {
-          top: MM(MARGIN_Y_MM),       // 15 mm — matches PDF
-          left: MM(MARGIN_X_MM),      // 16 mm — auto-centered
-          right: MM(MARGIN_X_MM),     // 16 mm — symmetric
+          top: MM(MARGIN_Y_MM), // 15 mm — matches PDF
+          left: MM(MARGIN_X_MM), // 16 mm — auto-centered
+          right: MM(MARGIN_X_MM), // 16 mm — symmetric
           bottom: MM(MARGIN_BOTTOM_MM), // 20 mm
         },
       },
