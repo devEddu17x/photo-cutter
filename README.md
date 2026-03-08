@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Photo Cutter — Wooden Flipbook Print Tool
 
-## Getting Started
+An internal web tool built with **Next.js 16**, **Tailwind CSS v4**, and **shadcn/ui** that prepares photos for printing on wooden flipbook adhesive sheets.
 
-First, run the development server:
+## What it does
+
+Upload any number of photos. The tool automatically:
+
+1. **Center-crops** each photo to the exact 58 × 62 mm aspect ratio (object-fit: cover).
+2. **Splits** the cropped image horizontally into two physical pieces:
+   - **Part A — Top** (58 × 31 mm)
+   - **Part B — Bottom** (58 × 31 mm)
+3. **Packs** pieces sequentially onto A4 sheets in a **3 × 8 grid (24 pieces / page)**, so each photo's Top and Bottom always land side by side for easy manual assembly.
+4. **Exports** a print-ready PDF or Word document with exact physical dimensions.
+
+## Print specifications
+
+| Parameter | Value |
+|---|---|
+| Page | A4 — 210 × 297 mm |
+| Piece size | 58 × 31 mm |
+| Grid | 3 columns × 8 rows = **24 pieces / sheet** |
+| Horizontal margin | 16 mm *(auto-centered: `(210 − 178) / 2`)* |
+| Top margin | 15 mm |
+| Gutter | 2 mm between pieces |
+| Resolution | 300 DPI |
+| Cut guide | 0.25 pt light-grey border on every piece |
+
+## Tech stack
+
+| Layer | Library |
+|---|---|
+| Framework | Next.js 16 (App Router) + React 19 |
+| Styling | Tailwind CSS v4 + shadcn/ui (radix-nova) |
+| PDF export | jsPDF 4 — exact mm units |
+| Word export | docx 9 — spacer-row/column gutter model |
+| File input | react-dropzone |
+| Image processing | Canvas API (300 DPI crop + split, client-side) |
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Navigate to `http://localhost:3000/photo-cutter`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  photo-cutter/page.tsx     Main page (orchestrator, state, export buttons)
+components/
+  ImageUploader.tsx          Drag-and-drop upload with progress bar
+  PrintPreview.tsx           Scaled A4 preview (CSS zoom, synced to PDF margins)
+  providers.tsx              ThemeProvider + Sonner Toaster wrapper
+lib/
+  image-processor.ts         Canvas: center-crop to 58×62 mm, split at midpoint
+  generate-pdf.ts            jsPDF: exact mm coordinates, cut-guide borders
+  generate-docx.ts           docx: 5-col × 15-row spacer table, A4 page setup
+```
 
-## Learn More
+## How the export models work
 
-To learn more about Next.js, take a look at the following resources:
+### PDF (`lib/generate-pdf.ts`)
+Places each image at `(MARGIN_X + col × 60, MARGIN_Y + row × 33)` in mm, then draws a 0.25 pt grey rectangle on top as a cut guide. Units are native mm throughout — no DPI conversion needed at draw time.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Word (`lib/generate-docx.ts`)
+Uses a **5-column × 15-row** table to achieve exact 2 mm gutters without distorting image size:
+```
+Columns: [ 58 mm | 2 mm | 58 mm | 2 mm | 58 mm ]
+Rows:    [ 31 mm ─ 2 mm ─ 31 mm ─ 2 mm ─ ... ]   (8 content + 7 spacer = 15 total)
+```
+Content cells have zero padding so images fill exactly 58 × 31 mm. Spacer cells are borderless.
